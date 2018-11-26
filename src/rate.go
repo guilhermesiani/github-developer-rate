@@ -143,8 +143,6 @@ func main() {
     fmt.Println("Calculating ")
 
     for i := 0; i < len(keys); i++ {
-        pullRequestsCount++
-
         update, err := time.Parse(time.RFC3339, keys[i].Created_at)
         if err != nil {
             fmt.Println(fmt.Sprintf("The http request failed with error %s\n", err))
@@ -153,6 +151,7 @@ func main() {
         if dateStartParsed.After(update) || dateEndParsed.Before(update) {
             continue
         }
+        pullRequestsCount++
 
         reviewKeys := getPullReviews("pullRequests", user, password, owner, repo, keys[i].Number)
 
