@@ -37,9 +37,9 @@ type PullReviews struct {
     Collection []PullReview
 }
 
-func getPullRequests(dataType string, user string, password string, owner string, repo string) []PullRequest {
+func getPullRequests(dataType string, user string, password string, owner string, repo string, page int) []PullRequest {
 
-    endpoint := fmt.Sprintf("https://api.github.com/repos/%s/%s/pulls", owner, repo)
+    endpoint := fmt.Sprintf("https://api.github.com/repos/%s/%s/pulls?page=%d", owner, repo, page)
     request, err := http.NewRequest("GET", endpoint, nil)
     request.SetBasicAuth(user, password)
     client := &http.Client{}
@@ -110,11 +110,10 @@ func main() {
 
     fmt.Println("Starting analyse")
 
-    keys := getPullRequests("pullRequests", user, password, owner, repo)
-
     var dateStart string;
     fmt.Println("Date start: ")
     fmt.Scanln(&dateStart)
+    dateStart += "T00:00:00Z"
     dateStartParsed, err := time.Parse(time.RFC3339, dateStart)
 
     if err != nil {
@@ -125,6 +124,7 @@ func main() {
     var dateEnd string;
     fmt.Println("Date end: ")
     fmt.Scanln(&dateEnd)
+    dateEnd += "T23:59:59Z"
     dateEndParsed, err := time.Parse(time.RFC3339, dateEnd)
 
     if err != nil {
@@ -142,25 +142,29 @@ func main() {
     fmt.Println()
     fmt.Println("Calculating ")
 
-    for i := 0; i < len(keys); i++ {
-        update, err := time.Parse(time.RFC3339, keys[i].Created_at)
-        if err != nil {
-            fmt.Println(fmt.Sprintf("The http request failed with error %s\n", err))
-            os.Exit(3)
-        }
-        if dateStartParsed.After(update) || dateEndParsed.Before(update) {
-            continue
-        }
-        pullRequestsCount++
-
-        reviewKeys := getPullReviews("pullRequests", user, password, owner, repo, keys[i].Number)
-
-        for j := 0; j < len(reviewKeys); j++ {
-            if reviewKeys[j].User.Login == githubUser {
-                pullReviewsCount++
+    keys := getPullRequests("pullRequests", user, password, owner, repo, 1)
+    for f := 2; len(keys) > 0; f++ {
+        for i := 0; i < len(keys); i++ {
+            update, err := time.Parse(time.RFC3339, keys[i].Created_at)
+            if err != nil {
+                fmt.Println(fmt.Sprintf("The http request failed with error %s\n", err))
+                os.Exit(3)
             }
+            if dateStartParsed.After(update) || dateEndParsed.Before(update) {
+                continue
+            }
+            pullRequestsCount++
+
+            reviewKeys := getPullReviews("pullReviews", user, password, owner, repo, keys[i].Number)
+
+            for j := 0; j < len(reviewKeys); j++ {
+                if reviewKeys[j].User.Login == githubUser {
+                    pullReviewsCount++
+                }
+            }
+            fmt.Print(".")
         }
-        fmt.Print(".")
+        keys = getPullRequests("pullRequests", user, password, owner, repo, f)
     }
 
     fmt.Println()
