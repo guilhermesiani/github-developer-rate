@@ -74,10 +74,10 @@ func main() {
 	for _, repo := range reposArray {
 		fmt.Println()
 		fmt.Println(repo)
-		keys := getPullRequests("pullRequests", user, password, owner, repo, 1)
-		for f := 2; len(keys) > 0; f++ {
-			for i := 0; i < len(keys); i++ {
-				update, err := time.Parse(time.RFC3339, keys[i].Created_at)
+		pullRequests := getPullRequests("pullRequests", user, password, owner, repo, 1)
+		for f := 2; len(pullRequests) > 0; f++ {
+			for _, pullRequest := range pullRequests {
+				update, err := time.Parse(time.RFC3339, pullRequest.Created_at)
 				if err != nil {
 					fmt.Println(fmt.Sprintf("The http request failed with error %s\n", err))
 					os.Exit(3)
@@ -87,22 +87,23 @@ func main() {
 				}
 				pullRequestsCount++
 
-				reviewKeys := getPullReviews("pullReviews", user, password, owner, repo, keys[i].Number)
+				reviews := getPullReviews("pullReviews", user, password, owner, repo, pullRequest.Number)
 
-				for j := 0; j < len(reviewKeys); j++ {
-					if reviewKeys[j].User.Login == githubUser {
+				for _, review := range reviews {
+					if review.User.Login == githubUser {
 						pullReviewsCount++
 					}
 				}
 				fmt.Print(".")
 			}
-			keys = getPullRequests("pullRequests", user, password, owner, repo, f)
+			pullRequests = getPullRequests("pullRequests", user, password, owner, repo, f)
 		}
 	}
 
 	fmt.Println()
 	fmt.Println()
-	fmt.Printf("User %s did %d reviews about %d pull requests on interval between %s and %s", githubUser, pullReviewsCount, pullRequestsCount, dateStart, dateEnd)
+	reviewsPercentual := (100 / pullRequestsCount) * pullReviewsCount
+	fmt.Printf("User %s did %d reviews about %d pull requests (%d%%) on interval between %s and %s", githubUser, pullReviewsCount, pullRequestsCount, reviewsPercentual, dateStart, dateEnd)
 
 	fmt.Println()
 	fmt.Println("Researchs ends for", owner, reposArray)
