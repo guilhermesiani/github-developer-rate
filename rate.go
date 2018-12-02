@@ -34,7 +34,7 @@ func main() {
 		os.Exit(3)
 	}
 
-	if "" == repos {
+	if len(repos) == 0 {
 		fmt.Println("You must set `repo` param")
 		os.Exit(3)
 	}
