@@ -114,7 +114,10 @@ func main() {
 
 	fmt.Println()
 	fmt.Println()
-	reviewsPercentual := (100 / pullRequestsCount) * pullReviewsCount
+	reviewsPercentual := 0
+	if pullRequestsCount != 0 || pullReviewsCount != 0 {
+		reviewsPercentual = (100 / pullRequestsCount) * pullReviewsCount
+	}
 	fmt.Printf("User %s did %d reviews about %d pull requests (%d%%) on interval between %s and %s", githubUser, pullReviewsCount, pullRequestsCount, reviewsPercentual, dateStart, dateEnd)
 
 	fmt.Println()
