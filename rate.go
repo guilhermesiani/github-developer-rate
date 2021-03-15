@@ -68,7 +68,7 @@ func main() {
 	fmt.Println("Github user: ")
 	fmt.Scanln(&user)
 
-	fmt.Println("Github password: ")
+	fmt.Println("Github OAuth Token: ")
 	bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
 	password := string(bytePassword)
 
