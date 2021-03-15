@@ -17,7 +17,7 @@ Example
 Steps on execute
 
 1) Put your github user
-2) Put your github password
+2) Put your github oauth2 token
 
 Output should be something like:
 
