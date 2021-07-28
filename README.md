@@ -31,6 +31,6 @@ interactivehistory
 virtualpet
 .......
 
-User guilhermesianilinx did 6 reviews about 16 pull requests (36%) on interval between 2018-11-10T00:00:00Z and 2018-11-30T23:59:59Z
-Researchs ends for chaordic [newoffers-inventory chubaca oms-stock-notifier oms-stock-threshold-importer falcon freight-importer]
+User guilhermesiani did 6 reviews about 16 pull requests (36%) on interval between 2018-11-10T00:00:00Z and 2018-11-30T23:59:59Z
+Researchs ends for guilhermesiani [interactivehistory, virtualpet]
 ```
